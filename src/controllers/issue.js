@@ -5,12 +5,14 @@ exports.list = async (req, h) => {
 
     try {
 
+        // find all issues and return
         issues = await Issue.find({}).exec();
 
         return { issues: issues };
 
     } catch (err) { 
 
+        // return any error for display
         return { err: err };
 
     }
@@ -21,10 +23,13 @@ exports.get = async (req, h) => {
     
     try {
 
+        // try to get the requested issue 
         issue = await Issue.findById(req.params.id).exec();
 
+        // if there isn't one, respond with message + appropriate code
         if (!issue) return h.response({ message: 'Issue not found' }).code(404); 
 
+        // return the issue if it was found
         return { issue: issue };
 
     } catch (err) {
@@ -46,7 +51,7 @@ exports.create = async (req, h) => {
             attachments: req.payload.attachments
         };
 
-        // create 
+        // create (immediate)
         issue = await Issue.create(issueData);
 
         // return message & proper code
@@ -112,12 +117,16 @@ exports.remove = async (req, h) => {
     
     try {
 
+        // try to get the issue using the ID
         issue = await Issue.findById(req.params.id).exec();
 
+        // if it doesn't exist, return message + appropriate code
         if (!issue) return h.response({ message: 'Issue not found' }).code(404);
 
+        // if it does, remove it (immediate)
         issue.remove();
 
+        // inform the app of success
         return { success: true };
 
     } catch (err) {

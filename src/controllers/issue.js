@@ -6,7 +6,7 @@ exports.list = async (req, h) => {
     try {
 
         // find all issues and return
-        issues = await Issue.find({}).exec();
+        issues = await Issue.find({}).populate('files').exec();
 
         return { issues: issues };
 

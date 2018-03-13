@@ -87,6 +87,17 @@ server.route({
 // file routes
 server.route({
     method: 'GET',
+    path: '/files',
+    config: {
+        handler: FileController.listAll,
+        description: 'Get all files',
+        notes: 'Fetches all files ',
+        tags: ['api']
+    },
+});
+
+server.route({
+    method: 'GET',
     path: '/issues/{id}/files',
     config: {
         handler: FileController.list,
@@ -102,11 +113,24 @@ server.route({
     config: {
         payload : {
             output: 'stream',
-            allow: 'multipart/form-data'
+            allow: 'multipart/form-data',
+            parse: true,
+            maxBytes: 2 * 1000 * 1000
         },
         handler: FileController.create,
         description: 'Associate a file to an issue',
         notes: 'Finds the associated issue, saves the file, creates a File instance to represent it in the DB',
+        tags: ['api']
+    },
+});
+
+server.route({
+    method: 'DELETE',
+    path: '/files/{id}',
+    config: {
+        handler: FileController.remove,
+        description: 'Delete a single file',
+        notes: 'Deletes a file and returns success',
         tags: ['api']
     },
 });

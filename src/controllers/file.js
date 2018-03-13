@@ -1,5 +1,25 @@
+const fs = require('fs');
+
 var File = require('../models/file');
 var Issue = require('../models/issue');
+
+// list all files
+exports.listAll = async (req, h) => {
+
+    try {
+
+        // get all files
+        files = await File.find({}).populate('issue').exec();
+
+        return { files: files };
+
+    } catch (err) { 
+
+        // return any error for display
+        return { err: err };
+
+    }
+}
 
 // list files associated to an Issue
 exports.list = async (req, h) => {
@@ -49,30 +69,52 @@ exports.get = async (req, h) => {
 // create a file to associate to an issue
 exports.create = async (req, h) => {
 
-    try {
+    try { 
+
+        let basePath = '/Users/david/Source/issue-tracker/files/';
 
         // attempt to get the issue
-        issue = await Issue.findById(req.params.id).exec();
+        issue = await Issue.findById(req.params.id).populate('files').exec();
 
         // return w/ 404 if the issue doesn't exist
         if (!issue) return h.response({ message: 'Issue not found' }).code(404);
 
+        // check for the issue directory that holds related files
+        let issueDir = `${basePath}/${issue._id}`;
+        if (!fs.existsSync(issueDir)) {
+
+            fs.mkdirSync(issueDir);
+
+        }
+
+        // generate the filename and filepath based on the issue directory and existing filename
+        let file = req.payload['file']
+        let fileName = file.hapi.filename;
+        let filePath = `${issueDir}/${fileName}`;
+
+        // save the file
+        // result = await fs.writeFile(filePath, file);
+        file.pipe(fs.createWriteStream(filePath));
+
         // get the new issue data from the payload
-        const issueData = {
-            path: req.payload.title,
+        const fileData = {
+            filePath: filePath,
             description: req.payload.description,
-            _issueId: issue._id
+            issue: issue._id
         };
 
-        // create (immediate)
-        file = await File.create(fileData);
+        // create the File document (immediate)
+        fileDoc = await File.create(fileData);
+
+        // update the issue files array
+        issue = await Issue.findByIdAndUpdate(req.params.id, { $addToSet: { files: fileDoc._id } }, { new: true }).populate('files');
 
         // return message & proper code
-        return h.response({ message: 'File uploaded successfully', issue: issue }).code(201);
+        return h.response({ message: 'File uploaded successfully', file: fileDoc }).code(201);
 
     } catch (err) {
 
-        return { err: err };
+        return h.response({ err: err.message }).code(400);
 
     }
 }

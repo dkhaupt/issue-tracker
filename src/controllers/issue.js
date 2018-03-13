@@ -39,15 +39,17 @@ exports.create = async (req, h) => {
 
     try {
 
+        // get the new issue data from the payload
         const issueData = {
             title: req.payload.title,
-            genre: req.payload.genre,
-            pageCount: req.payload.pageCount,
-            image: req.payload.image
+            description: req.payload.description,
+            attachments: req.payload.attachments
         };
 
+        // create 
         issue = await Issue.create(issueData);
 
+        // return message & proper code
         return h.response({ message: 'Issue created successfully', issue: issue }).code(201);
 
     } catch (err) {
@@ -62,14 +64,16 @@ exports.update = async (req, h) => {
 
     try {
 
+        // find the issue with the URL param
         issue = await Issue.findById(req.params.id).exec();
 
+        // if no issue with the provided ID, return proper message and code
         if (!issue) return h.response({ message: 'Issue not found' }).code(404);
 
+        // set fields- PUT expects a full object representation in the payload
         issue.title = req.payload.title;
-        issue.genre = req.payload.genre;
-        issue.pageCount = req.payload.pageCount;
-        issue.image = req.payload.image;
+        issue.description = req.payload.description;
+        issue.attachments = req.payload.attachments;        
 
         issue = await issue.save()
 

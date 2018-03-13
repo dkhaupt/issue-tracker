@@ -1,8 +1,12 @@
 'use strict';
 
+// basic setup
 const Hapi = require('hapi');
 const mongoose = require('mongoose');
 const MongoDBUrl = 'mongodb://localhost:27017/issueapi';
+
+// import issue controller
+const IssueController = require('./src/controllers/issue');
 
 // server definition
 const server = Hapi.server({
@@ -10,14 +14,54 @@ const server = Hapi.server({
     host: 'localhost',
 });
 
-// basic route
+// basic test route
+
 server.route({
     method: 'GET',
     path: '/',
     handler: (request, h) => {
 
         return 'Hello world';
+
     }
+});
+
+// issue routes
+
+server.route({
+    method:'GET',
+    path: '/issues',
+    handler: IssueController.list
+});
+
+server.route({
+    method: 'GET',
+    path: '/issues/{id}',
+    handler: IssueController.get
+});
+
+server.route({
+    method: 'POST',
+    path: '/issues',
+    handler: IssueController.create
+});
+
+server.route({
+    method: 'PUT',
+    path: '/issues/{id}',
+    handler: IssueController.update
+});
+
+server.route({
+    method: 'PATCH',
+    path: '/issues/{id}',
+    handler: IssueController.patch
+});
+
+server.route({
+    method: 'DELETE',
+    path: '/issues/{id}',
+    handler: IssueController.remove
 });
 
 // terminal logging of request path & response code

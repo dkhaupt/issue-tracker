@@ -76,3 +76,27 @@ exports.create = async (req, h) => {
 
     }
 }
+
+// delete by ID
+exports.remove = async (req, h) => {
+    
+    try {
+
+        // try to get the document using the file ID
+        file = await File.findById(req.params.id).exec();
+
+        // if it doesn't exist, return message + appropriate code
+        if (!file) return h.response({ message: 'File not found' }).code(404);
+
+        // if it does, remove it (immediate)
+        file.remove();
+
+        // inform the app of success
+        return { success: true };
+
+    } catch (err) {
+
+        return { err: err };
+
+    }
+}

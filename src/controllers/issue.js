@@ -24,7 +24,7 @@ exports.get = async (req, h) => {
     try {
 
         // try to get the requested issue 
-        issue = await Issue.findById(req.params.id).exec();
+        issue = await Issue.findById(req.params.id).populate('files').exec();
 
         // if there isn't one, respond with message + appropriate code
         if (!issue) return h.response({ message: 'Issue not found' }).code(404); 

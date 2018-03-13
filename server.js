@@ -24,8 +24,9 @@ const server = Hapi.server({
     host: 'localhost',
 });
 
-// import issue controller
+// import controllers
 const IssueController = require('./src/controllers/issue');
+const FileController = require('./src/controllers/file');
 
 // basic test route
 server.route({
@@ -73,24 +74,42 @@ server.route({
 });
 
 server.route({
-    method: 'PUT',
-    path: '/issues/{id}',
-    handler: IssueController.update
-});
-
-server.route({
-    method: 'PATCH',
-    path: '/issues/{id}',
-    handler: IssueController.patch
-});
-
-server.route({
     method: 'DELETE',
     path: '/issues/{id}',
-    handler: IssueController.remove
+    config: {
+        handler: IssueController.remove,
+        description: 'Delete a single issue',
+        notes: 'Deletes an issue and returns success',
+        tags: ['api']
+    },
 });
 
-// attachment routes
+// file routes
+server.route({
+    method: 'GET',
+    path: '/issues/{id}/files',
+    config: {
+        handler: FileController.list,
+        description: 'Get all files for a single issue',
+        notes: 'Fetches all files for the given issue',
+        tags: ['api']
+    },
+});
+
+server.route({
+    method: 'POST',
+    path: '/issues/{id}/files',
+    config: {
+        payload : {
+            output: 'stream',
+            allow: 'multipart/form-data'
+        },
+        handler: FileController.create,
+        description: 'Associate a file to an issue',
+        notes: 'Finds the associated issue, saves the file, creates a File instance to represent it in the DB',
+        tags: ['api']
+    },
+});
 
 // terminal logging of request path & response code
 server.events.on('response', function(request) {

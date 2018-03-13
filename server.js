@@ -18,17 +18,16 @@ const swaggerOptions = {
     },
 };
 
-// import issue controller
-const IssueController = require('./src/controllers/issue');
-
 // server definition
 const server = Hapi.server({
     port: 3000,
     host: 'localhost',
 });
 
-// basic test route
+// import issue controller
+const IssueController = require('./src/controllers/issue');
 
+// basic test route
 server.route({
     method: 'GET',
     path: '/',
@@ -40,7 +39,6 @@ server.route({
 });
 
 // issue routes
-
 server.route({
     method:'GET',
     path: '/issues',
@@ -91,6 +89,8 @@ server.route({
     path: '/issues/{id}',
     handler: IssueController.remove
 });
+
+// attachment routes
 
 // terminal logging of request path & response code
 server.events.on('response', function(request) {

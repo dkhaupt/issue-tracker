@@ -39,7 +39,7 @@ exports.get = async (req, h) => {
     }
 }
 
-// create a issue
+// create an issue
 exports.create = async (req, h) => {
 
     try {
@@ -64,7 +64,7 @@ exports.create = async (req, h) => {
     }
 }
 
-// update a issue
+// update an issue
 exports.update = async (req, h) => {
 
     try {

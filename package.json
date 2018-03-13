@@ -12,7 +12,9 @@
   "dependencies": {
     "hapi": "^17.2.2",
     "hapi-pino": "^4.0.3",
+    "hapi-swagger": "^9.1.1",
     "inert": "^5.1.0",
-    "mongoose": "^5.0.10"
+    "mongoose": "^5.0.10",
+    "vision": "^5.3.1"
   }
 }

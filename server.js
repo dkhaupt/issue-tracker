@@ -31,11 +31,9 @@ const server = Hapi.server({
 });
 
 // import routes
-var issue = require('./src/routes/issue');
-var file = require('./src/routes/file');
+var routes = require('./src/routes');
 
-server.route(issue);
-server.route(file);
+server.route(routes);
 
 // terminal logging of request path & response code
 server.events.on('response', function(request) {

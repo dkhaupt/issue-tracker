@@ -30,7 +30,17 @@ const server = Hapi.server({
     }
 });
 
-// import routes
+// basic hello route
+server.route({
+    method: 'GET',
+    path: '/',
+    handler: (request, h) => {
+
+        return 'Hello world';
+    }
+});
+
+// import API routes
 var routes = require('./src/routes');
 
 server.route(routes);
@@ -38,10 +48,10 @@ server.route(routes);
 // terminal logging of request path & response code
 server.events.on('response', function(request) {
     console.log(request.info.remoteAddress + ': ' + request.method.toUpperCase() + ' ' + request.url.path + ' --> ' + request.response.statusCode);
-})
+});
 
 // register plugins, start, and connect to MongoDB
-const init = async () => {
+(async () => {
 
     // register logging plugin
     await server.register({
@@ -66,14 +76,32 @@ const init = async () => {
     console.log(`Server running at: ${server.info.uri}`);
 
     mongoose.connect(MongoDBUrl, {}).then(() => { console.log(`Connected to Mongo server`) }, err => { console.log(err) });
-};
 
-// handle error
-process.on('unhandledRejection', (err) => {
+})();
 
-    console.log(err);
-    process.exit(1);
-});
+// // handle error
+// process.on('unhandledRejection', (err) => {
+
+//     console.log(err);
+//     process.exit(1);
+
+// });
 
 // call init
-init();
+// init();
+
+module.exports = server;
+
+// if (!module.parent) {
+
+//     exports.init(true);
+
+//     // handle error
+//     process.on('unhandledRejection', (err) => {
+
+//         console.log(err);
+//         process.exit(1);
+
+//     });
+
+// }

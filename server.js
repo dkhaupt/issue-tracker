@@ -125,7 +125,8 @@ server.route({
     config : {
         handler: FileController.getFile,
         description: 'Download a file associated to an issue',
-        notes: 'Downloads the supplied filename, must be associated to the supplied issue'
+        notes: 'Downloads the supplied filename, must be associated to the supplied issue',
+        tags: ['api']
     },
 })
 

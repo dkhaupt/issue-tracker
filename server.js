@@ -2,6 +2,7 @@
 
 // basic setup
 const Hapi = require('hapi');
+const Path = require('path');
 const mongoose = require('mongoose');
 const MongoDBUrl = 'mongodb://localhost:27017/issueapi';
 
@@ -22,6 +23,11 @@ const swaggerOptions = {
 const server = Hapi.server({
     port: 3000,
     host: 'localhost',
+    routes: {
+        files: {
+            relativeTo: Path.join(__dirname, 'files')
+        }
+    }
 });
 
 // import controllers
@@ -66,6 +72,12 @@ server.route({
     method: 'POST',
     path: '/issues',
     config: {
+        payload : {
+            output: 'stream',
+            allow: 'multipart/form-data',
+            parse: true,
+            maxBytes: 2 * 1000 * 1000
+        },
         handler: IssueController.create,
         description: 'Create an issue',
         notes: 'Creates a new issue with provided parameters',
@@ -106,6 +118,16 @@ server.route({
         tags: ['api']
     },
 });
+
+server.route({
+    method: 'GET',
+    path: '/issues/{id}/{filename}',
+    config : {
+        handler: FileController.getFile,
+        description: 'Download a file associated to an issue',
+        notes: 'Downloads the supplied filename, must be associated to the supplied issue'
+    },
+})
 
 server.route({
     method: 'POST',

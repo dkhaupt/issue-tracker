@@ -79,29 +79,4 @@ server.events.on('response', function(request) {
 
 })();
 
-// // handle error
-// process.on('unhandledRejection', (err) => {
-
-//     console.log(err);
-//     process.exit(1);
-
-// });
-
-// call init
-// init();
-
 module.exports = server;
-
-// if (!module.parent) {
-
-//     exports.init(true);
-
-//     // handle error
-//     process.on('unhandledRejection', (err) => {
-
-//         console.log(err);
-//         process.exit(1);
-
-//     });
-
-// }

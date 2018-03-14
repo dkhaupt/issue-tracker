@@ -20,8 +20,8 @@ module.exports = [
         path: '/issues/{id}/files',
         config: {
             handler: FileController.list,
-            description: 'Get all files for a single issue',
-            notes: 'Fetches all files for the given issue',
+            description: 'Get information of all files associated to a single issue',
+            notes: 'Fetches information for all files for the given issue',
             tags: ['api']
         },
     },
@@ -52,18 +52,6 @@ module.exports = [
             handler: FileController.create,
             description: 'Associate a file to an issue',
             notes: 'Finds the associated issue, saves the file, creates a File instance to represent it in the DB',
-            tags: ['api']
-        },
-    },
-
-    // route to delete files by ID
-    {
-        method: 'DELETE',
-        path: '/files/{id}',
-        config: {
-            handler: FileController.remove,
-            description: 'Delete a single file',
-            notes: 'Deletes a file and returns success',
             tags: ['api']
         },
     },

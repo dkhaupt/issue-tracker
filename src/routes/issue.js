@@ -43,16 +43,4 @@ module.exports = [
             tags: ['api']
         },
     },
-
-    // route to delete a single issue
-    {
-        method: 'DELETE',
-        path: '/issues/{id}',
-        config: {
-            handler: IssueController.remove,
-            description: 'Delete a single issue',
-            notes: 'Deletes an issue and returns success',
-            tags: ['api']
-        },
-    },
 ]

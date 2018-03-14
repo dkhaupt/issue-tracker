@@ -6,7 +6,7 @@ const Schema = mongoose.Schema;
 const issueModel = new Schema({
     title: { type: String, required: true },
     description: { type: String, required: true },
-    attachments: { type: [String] }
+    files: [{ type: Schema.Types.ObjectId, ref: 'File' }]
 }, {
     timestamps: true
 });

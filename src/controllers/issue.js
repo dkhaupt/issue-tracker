@@ -1,32 +1,33 @@
 var Issue = require('../models/issue');
+const FileController = require('../controllers/file');
 
-// list issues
+// list Issues
 exports.list = async (req, h) => {
 
     try {
 
-        // find all issues and return
-        issues = await Issue.find({}).exec();
+        // find all Issues and return
+        issues = await Issue.find({}).populate('files').exec();
 
         return { issues: issues };
 
     } catch (err) { 
 
         // return any error for display
-        return { err: err };
+        return h.response({ err: err.message }).code(400);
 
     }
 }
 
-// get issue by ID
+// get Issue by ID
 exports.get = async (req, h) => {
     
     try {
 
-        // try to get the requested issue 
-        issue = await Issue.findById(req.params.id).exec();
+        // try to get the requested Issue 
+        issue = await Issue.findById(req.params.id).populate('files').exec();
 
-        // if there isn't one, respond with message + appropriate code
+        // if it doesn't exist, respond with message + appropriate code
         if (!issue) return h.response({ message: 'Issue not found' }).code(404); 
 
         // return the issue if it was found
@@ -34,37 +35,48 @@ exports.get = async (req, h) => {
 
     } catch (err) {
 
-        return { err: err };
+        return h.response({ err: err.message }).code(400);
 
     }
 }
 
-// create a issue
+// create a new Issue
 exports.create = async (req, h) => {
 
     try {
 
-        // get the new issue data from the payload
+        // get the new Issue data from the payload
         const issueData = {
             title: req.payload.title,
             description: req.payload.description,
-            attachments: req.payload.attachments
         };
 
         // create (immediate)
         issue = await Issue.create(issueData);
+
+        // if file(s) included, process those now
+        let fileDocs = []
+        if (req.payload.file) {
+
+            // call the file processor
+            fileDocs = await FileController.saveFiles(issue, req.payload);
+
+            // refresh the Issue & populate the associated files
+            issue = await Issue.findById(issue._id).populate('files').exec();
+
+        }
 
         // return message & proper code
         return h.response({ message: 'Issue created successfully', issue: issue }).code(201);
 
     } catch (err) {
 
-        return { err: err };
+        return h.response({ err: err.message }).code(400);
 
     }
 }
 
-// update a issue
+// update an Issue
 exports.update = async (req, h) => {
 
     try {
@@ -77,8 +89,7 @@ exports.update = async (req, h) => {
 
         // set fields- PUT expects a full object representation in the payload
         issue.title = req.payload.title;
-        issue.description = req.payload.description;
-        issue.attachments = req.payload.attachments;        
+        issue.description = req.payload.description;   
 
         issue = await issue.save()
 
@@ -86,13 +97,13 @@ exports.update = async (req, h) => {
 
     } catch (err) {
 
-        return { err: err };
+        return h.response({ err: err.message }).code(400);
 
     }
 
 }
 
-// update 1+ fields without entire issue
+// update 1+ fields without entire Issue
 exports.patch = async (req, h) => {
 
     try {
@@ -107,7 +118,7 @@ exports.patch = async (req, h) => {
 
     } catch (err) { 
 
-        return { err: err };
+        return h.response({ err: err.message }).code(400);
 
     }
 }
@@ -131,7 +142,7 @@ exports.remove = async (req, h) => {
 
     } catch (err) {
 
-        return { err: err };
+        return h.response({ err: err.message }).code(400);
 
     }
 }

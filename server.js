@@ -2,6 +2,7 @@
 
 // basic setup
 const Hapi = require('hapi');
+const Path = require('path');
 const mongoose = require('mongoose');
 const MongoDBUrl = 'mongodb://localhost:27017/issueapi';
 
@@ -18,17 +19,22 @@ const swaggerOptions = {
     },
 };
 
-// import issue controller
-const IssueController = require('./src/controllers/issue');
-
 // server definition
 const server = Hapi.server({
     port: 3000,
     host: 'localhost',
+    routes: {
+        files: {
+            relativeTo: Path.join(__dirname, 'files')
+        }
+    }
 });
 
-// basic test route
+// import controllers
+const IssueController = require('./src/controllers/issue');
+const FileController = require('./src/controllers/file');
 
+// basic test route
 server.route({
     method: 'GET',
     path: '/',
@@ -40,7 +46,6 @@ server.route({
 });
 
 // issue routes
-
 server.route({
     method:'GET',
     path: '/issues',
@@ -67,6 +72,12 @@ server.route({
     method: 'POST',
     path: '/issues',
     config: {
+        payload : {
+            output: 'stream',
+            allow: 'multipart/form-data',
+            parse: true,
+            maxBytes: 2 * 1000 * 1000
+        },
         handler: IssueController.create,
         description: 'Create an issue',
         notes: 'Creates a new issue with provided parameters',
@@ -75,21 +86,75 @@ server.route({
 });
 
 server.route({
-    method: 'PUT',
+    method: 'DELETE',
     path: '/issues/{id}',
-    handler: IssueController.update
+    config: {
+        handler: IssueController.remove,
+        description: 'Delete a single issue',
+        notes: 'Deletes an issue and returns success',
+        tags: ['api']
+    },
+});
+
+// file routes
+server.route({
+    method: 'GET',
+    path: '/files',
+    config: {
+        handler: FileController.listAll,
+        description: 'Get all files',
+        notes: 'Fetches all files ',
+        tags: ['api']
+    },
 });
 
 server.route({
-    method: 'PATCH',
-    path: '/issues/{id}',
-    handler: IssueController.patch
+    method: 'GET',
+    path: '/issues/{id}/files',
+    config: {
+        handler: FileController.list,
+        description: 'Get all files for a single issue',
+        notes: 'Fetches all files for the given issue',
+        tags: ['api']
+    },
+});
+
+server.route({
+    method: 'GET',
+    path: '/issues/{id}/{filename}',
+    config : {
+        handler: FileController.getFile,
+        description: 'Download a file associated to an issue',
+        notes: 'Downloads the supplied filename, must be associated to the supplied issue'
+    },
+})
+
+server.route({
+    method: 'POST',
+    path: '/issues/{id}/files',
+    config: {
+        payload : {
+            output: 'stream',
+            allow: 'multipart/form-data',
+            parse: true,
+            maxBytes: 2 * 1000 * 1000
+        },
+        handler: FileController.create,
+        description: 'Associate a file to an issue',
+        notes: 'Finds the associated issue, saves the file, creates a File instance to represent it in the DB',
+        tags: ['api']
+    },
 });
 
 server.route({
     method: 'DELETE',
-    path: '/issues/{id}',
-    handler: IssueController.remove
+    path: '/files/{id}',
+    config: {
+        handler: FileController.remove,
+        description: 'Delete a single file',
+        notes: 'Deletes a file and returns success',
+        tags: ['api']
+    },
 });
 
 // terminal logging of request path & response code

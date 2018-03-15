@@ -76,8 +76,20 @@ server.events.on('response', function(request) {
     await server.start();
     console.log(`Server running at: ${server.info.uri}`);
 
-    mongoose.connect(MongoDBUrl, {}).then(() => { console.log(`Connected to Mongo server`) }, err => { console.log(err) });
+    // connect to MongoDB
+    await mongoose.connect(MongoDBUrl, {});
+
+    console.log(`Connected to Mongo server`)
 
 })();
 
+// handle error
+process.on('unhandledRejection', (err) => {
+
+    console.log(err);
+    process.exit(1);
+
+});
+
+// add server to exports for testing
 module.exports = server;

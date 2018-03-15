@@ -36,7 +36,7 @@ exports.list = async (req, h) => {
         // find the Files associated to the given issue
         files = issue.files;
 
-        return h.file(files[0].filePath);
+        return { files: files };
 
     } catch (err) { 
 
@@ -52,7 +52,7 @@ exports.get = async (req, h) => {
     try {
 
         // try to get the requested File 
-        file = await file.findById(req.params.fileId).exec();
+        file = await File.findById(req.params.id).exec();
 
         // if there isn't one, respond with message + appropriate code
         if (!file) return h.response({ message: 'File not found' }).code(404); 
@@ -62,6 +62,7 @@ exports.get = async (req, h) => {
 
     } catch (err) {
 
+        // return any error for display
         return h.response({ err: err.message }).code(400);
 
     }
@@ -77,6 +78,7 @@ exports.getFile = async (req, h) => {
 
     } catch (err) {
 
+        // return any error for display
         return h.response({ err: err.message }).code(400);
 
     }
@@ -104,6 +106,7 @@ exports.create = async (req, h) => {
 
     } catch (err) {
 
+        // return any error for display
         return h.response({ err: err.message }).code(400);
 
     }
@@ -182,29 +185,4 @@ exports.saveFiles = async (issue, payload) => {
     // return the array of created Files
     return fileDocs;
 
-}
-
-// delete by ID
-// this is for testing only
-exports.remove = async (req, h) => {
-    
-    try {
-
-        // try to get the document using the file ID
-        file = await File.findById(req.params.id).exec();
-
-        // if it doesn't exist, return message + appropriate code
-        if (!file) return h.response({ message: 'File not found' }).code(404);
-
-        // if it does, remove it (immediate)
-        file.remove();
-
-        // inform the app of success
-        return { success: true };
-
-    } catch (err) {
-
-        return h.response({ err: err.message }).code(400);
-
-    }
 }

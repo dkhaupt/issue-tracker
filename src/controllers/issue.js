@@ -35,6 +35,7 @@ exports.get = async (req, h) => {
 
     } catch (err) {
 
+        // return any error for display
         return h.response({ err: err.message }).code(400);
 
     }
@@ -71,77 +72,7 @@ exports.create = async (req, h) => {
 
     } catch (err) {
 
-        return h.response({ err: err.message }).code(400);
-
-    }
-}
-
-// update an Issue
-exports.update = async (req, h) => {
-
-    try {
-
-        // find the issue with the URL param
-        issue = await Issue.findById(req.params.id).exec();
-
-        // if no issue with the provided ID, return proper message and code
-        if (!issue) return h.response({ message: 'Issue not found' }).code(404);
-
-        // set fields- PUT expects a full object representation in the payload
-        issue.title = req.payload.title;
-        issue.description = req.payload.description;   
-
-        issue = await issue.save()
-
-        if (issue) { return { message: 'Issue updated successfully' }; }
-
-    } catch (err) {
-
-        return h.response({ err: err.message }).code(400);
-
-    }
-
-}
-
-// update 1+ fields without entire Issue
-exports.patch = async (req, h) => {
-
-    try {
-
-        issue = await Issue.findById(req.params.id).exec();
-
-        if (!issue) return h.response({ message: 'Issue not found' }).code(404);
-
-        issue = await issue.update(req.payload);
-
-        return { message: 'Issue field(s) updated successfully' };
-
-    } catch (err) { 
-
-        return h.response({ err: err.message }).code(400);
-
-    }
-}
-
-// delete by ID
-exports.remove = async (req, h) => {
-    
-    try {
-
-        // try to get the issue using the ID
-        issue = await Issue.findById(req.params.id).exec();
-
-        // if it doesn't exist, return message + appropriate code
-        if (!issue) return h.response({ message: 'Issue not found' }).code(404);
-
-        // if it does, remove it (immediate)
-        issue.remove();
-
-        // inform the app of success
-        return { success: true };
-
-    } catch (err) {
-
+        // return any error for display
         return h.response({ err: err.message }).code(400);
 
     }

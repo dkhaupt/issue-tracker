@@ -1,4 +1,4 @@
-// 'use strict';
+'use strict';
 
 const Lab = require('lab');
 const Code = require('code');
@@ -74,7 +74,7 @@ describe('basic Issue requests of the server', () => {
 
         // retrieve the issue created in the preceding test
         let issueUrl = `/issues/${issueId}`;
-        response = await Server.inject(issueUrl);
+        const response = await Server.inject(issueUrl);
 
         expect(response.statusCode).to.equal(200);
         expect(response.result.issue).to.exist();
@@ -90,7 +90,7 @@ describe('basic invalid Issue requests', () => {
     it('asserts detail request to an invalid ID (non-parseable) fails', async () => {
 
         // '1' is not a valid ObjectID
-        response = await Server.inject('/issues/1');
+        const response = await Server.inject('/issues/1');
 
         // expect 400 (bad request) and a message in the 'err' key
         expect(response.statusCode).to.equal(400);
@@ -100,10 +100,10 @@ describe('basic invalid Issue requests', () => {
     it('asserts detail request to a non-existent ID fails', async () => {
 
         // this ID was previously used (valid ObjectID) and shouldn't exist again b/c seconds make up the first 4 bytes of ObjectID format
-        badId = '5aa9bb1fb17a29392d6611a6'
+        let badId = '5aa9bb1fb17a29392d6611a6'
 
         // request the badId endpoint. if it returns 200, things should get interesting
-        response = await Server.inject(`/issues/${badId}`);
+        const response = await Server.inject(`/issues/${badId}`);
 
         // expect 404 (not found)
         expect(response.statusCode).to.equal(404);

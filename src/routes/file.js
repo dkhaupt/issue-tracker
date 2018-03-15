@@ -14,6 +14,18 @@ module.exports = [
         },
     },
 
+    // route to retrieve a single File
+    {
+        method: 'GET',
+        path: '/files/{id}',
+        config: {
+            handler: FileController.get,
+            description: 'Get information of all files associated to a single issue',
+            notes: 'Fetches information for all files for the given issue',
+            tags: ['api']
+        },
+    },
+
     // route to retrieve all files for a single Issue
     {
         method: 'GET',

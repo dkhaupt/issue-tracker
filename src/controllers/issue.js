@@ -35,6 +35,7 @@ exports.get = async (req, h) => {
 
     } catch (err) {
 
+        // return any error for display
         return h.response({ err: err.message }).code(400);
 
     }
@@ -71,6 +72,7 @@ exports.create = async (req, h) => {
 
     } catch (err) {
 
+        // return any error for display
         return h.response({ err: err.message }).code(400);
 
     }

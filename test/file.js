@@ -22,8 +22,9 @@ const { describe, it } = lab
 // code shortcuts
 const expect = Code.expect;
 
-// issueId to use across tests
+// issueId and fileId to use across tests
 let issueId = 0;
+let fileId = 0;
 
 describe('Issue creation with attached files', () => {
 
@@ -157,8 +158,8 @@ describe('Associate files to existing Issue', () => {
         }
 
         // create the payload with the proper encoding
+        // leave out description to ensure it's set to the filename
         const form = new FormData()
-        form.append('description', 'Test file description');
 
         // this issue has test_file.rtf and test_pic.png attached, so add test_pic_small.png and another_pic.png
         var fileStream = fs.createReadStream('./test/test_files/test_pic_small.png');
@@ -186,11 +187,43 @@ describe('Associate files to existing Issue', () => {
 
     });
 
+    // attempt attach existing file to existing Issue
+    it('asserts that a file cannot be re-attached to existing Issue', async () => {
+
+        const injectionOptions = {
+            method: 'POST',
+            url: `/issues/${issueId}/files`,
+        }
+
+        // create the payload with the proper encoding
+        const form = new FormData()
+        form.append('description', 'Test file description');
+
+        // this issue has test_file.rtf attached, so try to add it again
+        var fileStream = fs.createReadStream('./test/test_files/test_file.rtf');
+        form.append('file', fileStream);
+
+        // set the headers with Content-Type and boundary for multipart/form-data
+        injectionOptions.headers = form.getHeaders()
+
+        // stream the form to a promise
+        // hapi seems to natively support stream payloads now, but i can't figure out how to use them
+        await streamToPromise(form).then( async (payload) => {
+
+            injectionOptions.payload = payload;
+
+            const response = await Server.inject(injectionOptions);
+
+            expect(response.statusCode).to.equal(400);
+            expect(response.result.err).to.exist();
+
+        });
+
+    });
+
 });
 
 describe('Basic File info request (accessory endpoint)', () => {
-
-    let fileId;
 
     it('asserts that unofficial file list endpoint works', async () => {
         
@@ -227,3 +260,136 @@ describe('Basic File info request (accessory endpoint)', () => {
     });
 
 });
+
+describe('File download request', () => {
+
+    it('asserts that files can be downloaded', async () => {
+
+        // get the file with fileId in order to access the filePath
+        let fileUrl = `/files/${fileId}`;
+        let response = await Server.inject(fileUrl);
+
+        // check that the request was ok
+        expect(response.statusCode).to.equal(200);
+        expect(response.result.file).to.exist();
+
+        let file = response.result.file;
+
+        // now retrieve the file itself
+        fileUrl = file.filePath;
+        response = await Server.inject(fileUrl);
+
+        expect(response.statusCode).to.equal(200);
+        expect(response.result).to.exist();
+
+    });
+
+});
+
+describe('Bad requests', () => {
+
+    // attach file to nonexistent Issue
+    it('asserts that a file cant be associated to nonexistent Issue', async () => {
+
+        // use fileId as an Issue ID
+        const injectionOptions = {
+            method: 'POST',
+            url: `/issues/${fileId}/files`,
+        }
+
+        // create the payload with the proper encoding
+        const form = new FormData()
+        form.append('description', 'Test file description');
+
+        // this issue has test_file.rtf attached, so add test_pic.png
+        var fileStream = fs.createReadStream('./test/test_files/test_pic.png');
+        form.append('file', fileStream);
+
+        // set the headers with Content-Type and boundary for multipart/form-data
+        injectionOptions.headers = form.getHeaders()
+
+        // stream the form to a promise
+        // hapi seems to natively support stream payloads now, but i can't figure out how to use them
+        await streamToPromise(form).then( async (payload) => {
+
+            injectionOptions.payload = payload;
+
+            const response = await Server.inject(injectionOptions);
+
+            expect(response.statusCode).to.equal(404);
+            expect(response.result.message).to.equal('Issue not found');
+
+        });
+
+    });
+
+    // "attach" file to existing Issue but forget to include 'file' key in payload
+    it('asserts that attempting to attach file without including file fails', async () => {
+
+        const injectionOptions = {
+            method: 'POST',
+            url: `/issues/${issueId}/files`,
+        }
+
+        // create the payload with the proper encoding
+        const form = new FormData()
+        form.append('description', 'Test file description');
+
+        // do not add filestream to the payload
+
+        // set the headers with Content-Type and boundary for multipart/form-data
+        injectionOptions.headers = form.getHeaders()
+
+        // stream the form to a promise
+        // hapi seems to natively support stream payloads now, but i can't figure out how to use them
+        await streamToPromise(form).then( async (payload) => {
+
+            injectionOptions.payload = payload;
+
+            const response = await Server.inject(injectionOptions);
+
+            expect(response.statusCode).to.equal(400);
+            expect(response.result.message).to.exist();
+            expect(response.result.message).to.equal('No files selected for upload');
+
+        });
+
+    });
+
+    // request file list for non existent Issue
+    it('asserts that unofficial file list for Issue endpoint 404s for nonexistent Issues', async () => {
+        
+        // use fileId as an Issue ID
+        let issueUrl = `/issues/${fileId}/files`;
+        const response = await Server.inject(issueUrl);
+
+        // at this point, issueId has 4 files
+        expect(response.statusCode).to.equal(404);
+        expect(response.result.message).to.equal('Issue not found');
+
+    });
+
+    // request file detail for non existent file
+    it('asserts that unofficial file detail endpoint 404s for nonexistent files', async () => {
+
+        // use issueId as a File ID
+        let fileUrl = `/files/${issueId}`;
+        const response = await Server.inject(fileUrl);
+
+        expect(response.statusCode).to.equal(404);
+        expect(response.result.message).to.equal('File not found');
+
+    });
+
+    // request file download for non existent file
+    it('asserts that nonexistent files cant be downloaded', async () => {
+
+        // construct a nonsense fileUrl
+        let fileUrl = `/issues/${fileId}/nonexistent.txt`
+        const response = await Server.inject(fileUrl);
+
+        expect(response.statusCode).to.equal(404);
+
+    });
+
+})

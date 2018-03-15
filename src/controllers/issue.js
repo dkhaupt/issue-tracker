@@ -75,27 +75,3 @@ exports.create = async (req, h) => {
 
     }
 }
-
-// delete by ID
-exports.remove = async (req, h) => {
-    
-    try {
-
-        // try to get the issue using the ID
-        issue = await Issue.findById(req.params.id).exec();
-
-        // if it doesn't exist, return message + appropriate code
-        if (!issue) return h.response({ message: 'Issue not found' }).code(404);
-
-        // if it does, remove it (immediate)
-        issue.remove();
-
-        // inform the app of success
-        return { success: true };
-
-    } catch (err) {
-
-        return h.response({ err: err.message }).code(400);
-
-    }
-}

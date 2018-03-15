@@ -183,28 +183,3 @@ exports.saveFiles = async (issue, payload) => {
     return fileDocs;
 
 }
-
-// delete by ID
-// this is for testing only
-exports.remove = async (req, h) => {
-    
-    try {
-
-        // try to get the document using the file ID
-        file = await File.findById(req.params.id).exec();
-
-        // if it doesn't exist, return message + appropriate code
-        if (!file) return h.response({ message: 'File not found' }).code(404);
-
-        // if it does, remove it (immediate)
-        file.remove();
-
-        // inform the app of success
-        return { success: true };
-
-    } catch (err) {
-
-        return h.response({ err: err.message }).code(400);
-
-    }
-}

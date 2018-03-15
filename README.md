@@ -108,3 +108,12 @@ Returns information about File `id`.
 #### `GET /issues/{id}/files`
 Returns information about all Files associated to Issue `id`. 
 * Note: this does not serve all files associated to Issue `id` for download , but returns the relevant File data for potential use by the client
+
+## Future Enhancement
+As requirements change in the future, more features may need to be added. Overall, adding new features requires these steps:
+1. Add models (if needed) to a new file in `src/models/`
+2. Add route handers (controllers) to a new file in `src/controllers/`
+3. Add tests to a new file in `test/`
+4. Add documentation to this `README.md`
+
+Routes are dynamically loaded & exported, so no manipulation of `server.js` should be necessary. As long as new routes include `description`, `notes`, and `tags: [api]` in the `config` dictionary of the handler, they will be added to the Swagger documentation.

@@ -41,7 +41,7 @@ server.route({
     }
 });
 
-// import API routes
+// import and register API routes
 var routes = require('./src/routes');
 
 server.route(routes);
@@ -73,12 +73,12 @@ server.events.on('response', function(request) {
         }
     ]);
 
+    // start the server
     await server.start();
     console.log(`Server running at: ${server.info.uri}`);
 
     // connect to MongoDB
     await mongoose.connect(MongoDBUrl, {});
-
     console.log(`Connected to Mongo server`)
 
 })();

@@ -16,3 +16,4 @@ coverage.*
 .settings
 package-lock.json
 files/*
+.vscode/*

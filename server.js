@@ -12,6 +12,7 @@ const Vision = require('vision');
 const HapiSwagger = require('hapi-swagger');
 const Pack = require('./package');
 
+// Autogenned docs options
 const swaggerOptions = {
     info: {
         title: 'Issue Tracker API Documentation',

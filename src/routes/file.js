@@ -14,7 +14,7 @@ module.exports = [
         },
     },
 
-    // route to retrieve a single File
+    // route to retrieve a single File by id
     {
         method: 'GET',
         path: '/files/{id}',

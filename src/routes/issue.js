@@ -33,7 +33,7 @@ module.exports = [
         config: {
             payload : {
                 output: 'stream',
-                allow: ['multipart/form-data', 'application/json', 'application/x-www-form-urlencoded'],
+                allow: ['multipart/form-data'],
                 parse: true,
                 maxBytes: 2 * 1000 * 1000
             },

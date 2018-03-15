@@ -9,7 +9,7 @@ module.exports = [
         config: {
             handler: IssueController.list,
             description: 'List all issues',
-            notes: 'Returns a list of all issues',
+            notes: 'Returns a list of all issues, including associated file data per issue where it exists.',
             tags: ['api'],
         },
     },
@@ -21,7 +21,7 @@ module.exports = [
         config: {
             handler: IssueController.get,
             description: 'Get a single issue',
-            notes: 'Fetches an issue and returns',
+            notes: 'Fetches an issue with the provided ObjectID and returns',
             tags: ['api']
         },
     },
@@ -39,7 +39,7 @@ module.exports = [
             },
             handler: IssueController.create,
             description: 'Create an issue',
-            notes: 'Creates a new issue with provided parameters',
+            notes: 'Creates a new issue with provided parameters: Title, Description, and optional files. If including files, payload key must be "file". Request must be encoded as multipart/form-data.',
             tags: ['api']
         },
     },

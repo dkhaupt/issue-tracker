@@ -9,7 +9,7 @@ module.exports = [
         config: {
             handler: FileController.listAll,
             description: 'Get all files',
-            notes: 'Fetches all files ',
+            notes: 'Fetches all files present in the DB.',
             tags: ['api']
         },
     },
@@ -20,8 +20,8 @@ module.exports = [
         path: '/files/{id}',
         config: {
             handler: FileController.get,
-            description: 'Get information of all files associated to a single issue',
-            notes: 'Fetches information for all files for the given issue',
+            description: 'Get detail information for a single File',
+            notes: 'Fetches the File with provided ObjectID and returns. This does not serve the file for download, but is intended for use by the client',
             tags: ['api']
         },
     },
@@ -33,7 +33,7 @@ module.exports = [
         config: {
             handler: FileController.list,
             description: 'Get information of all files associated to a single issue',
-            notes: 'Fetches information for all files for the given issue',
+            notes: 'Fetches File information for all files for the given issue. This does not serve them for download, but is intended for use by the client.',
             tags: ['api']
         },
     },
@@ -63,7 +63,7 @@ module.exports = [
             },
             handler: FileController.create,
             description: 'Associate a file to an issue',
-            notes: 'Finds the associated issue, saves the file, creates a File instance to represent it in the DB',
+            notes: 'Finds the associated issue, saves the file, creates a File instance to represent it in the DB. Payload key must be "file". Request must be encoded as multipart/form-data.',
             tags: ['api']
         },
     },

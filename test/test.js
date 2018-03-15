@@ -27,27 +27,5 @@ describe('basic requests of the server', () => {
         expect(response.statusCode).to.equal(200);
 
     });
-    
-    it('asserts a list of issues is returned', async () => {
-
-        const response = await Server.inject('/issues');
-
-        expect(response.statusCode).to.equal(200);
-        expect(response.result.issues).to.have.length(1);
-
-    });
 
 });
-
-// describe('basic list of issues', () => {
-
-//     it('asserts a list of issues is returned', async () => {
-
-//         const server = await Server.init();
-
-//         const response = await server.inject('/issues');
-
-//         expect(response.statusCode).to.equal(200);
-
-//     });
-// });

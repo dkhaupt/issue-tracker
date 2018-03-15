@@ -33,8 +33,10 @@ describe('basic Issue requests of the server', () => {
 
     });
 
-    // variable to hold ID of created issue
+    // variable to hold ID, title, and description of created issue
     let issueId;
+    let title;
+    let description;
 
     it('asserts an issue can be created', async () => {
 
@@ -45,8 +47,10 @@ describe('basic Issue requests of the server', () => {
 
         // create the payload with the proper encoding
         const form = new FormData()
-        form.append('title', 'Test Issue ' + (Math.random() * 100000).toString());
-        form.append('description', 'Test issue description');
+        title = 'Test Issue ' + (Math.random() * 100000).toString();
+        description = 'Test issue description';
+        form.append('title', title);
+        form.append('description', description);
 
         // set the headers with Content-Type and boundary for multipart/form-data
         injectionOptions.headers = form.getHeaders()
@@ -59,9 +63,12 @@ describe('basic Issue requests of the server', () => {
 
             const response = await Server.inject(injectionOptions);
 
+            // verify issue is created, success message is returned, and returned issue title & description match parameters
             expect(response.statusCode).to.equal(201);
             expect(response.result.message).to.equal('Issue created successfully');
             expect(response.result.issue).to.exist();
+            expect(response.result.issue.title).to.equal(title);
+            expect(response.result.issue.description).to.equal(description);
 
             // save the issue ID for future tests
             issueId = response.result.issue._id;
@@ -76,9 +83,12 @@ describe('basic Issue requests of the server', () => {
         let issueUrl = `/issues/${issueId}`;
         const response = await Server.inject(issueUrl);
 
+        // verify issue is returned, and issue title & description match parameters from original creation
         expect(response.statusCode).to.equal(200);
         expect(response.result.issue).to.exist();
         expect(response.result.issue._id).to.equal(issueId);
+        expect(response.result.issue.title).to.equal(title);
+        expect(response.result.issue.description).to.equal(description);
 
     });
 

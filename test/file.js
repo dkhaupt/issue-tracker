@@ -214,6 +214,7 @@ describe('Associate files to existing Issue', () => {
 
             const response = await Server.inject(injectionOptions);
 
+            // expect 400 (Bad Request) and an error to be returned
             expect(response.statusCode).to.equal(400);
             expect(response.result.err).to.exist();
 
@@ -348,6 +349,7 @@ describe('Bad requests', () => {
 
             const response = await Server.inject(injectionOptions);
 
+            // expect 400 (Bad Request) since files are required for this endpoint
             expect(response.statusCode).to.equal(400);
             expect(response.result.message).to.exist();
             expect(response.result.message).to.equal('No files selected for upload');
@@ -376,6 +378,7 @@ describe('Bad requests', () => {
         let fileUrl = `/files/${issueId}`;
         const response = await Server.inject(fileUrl);
 
+        // expect a 404 since File cant be found
         expect(response.statusCode).to.equal(404);
         expect(response.result.message).to.equal('File not found');
 
@@ -388,6 +391,7 @@ describe('Bad requests', () => {
         let fileUrl = `/issues/${fileId}/nonexistent.txt`
         const response = await Server.inject(fileUrl);
 
+        // expect a 404 since the file cant be found
         expect(response.statusCode).to.equal(404);
 
     });
